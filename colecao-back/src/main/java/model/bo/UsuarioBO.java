@@ -43,7 +43,7 @@ public class UsuarioBO {
 		return null;
 	}
 
-	public Response consultarTodosUsuarioBO() {
+	public Response consultarTodosUsuariosBO() {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		ArrayList<UsuarioVO> listaUsuarioVO = usuarioDAO.consultarTodosUsuariosDAO();
 		if (listaUsuarioVO.isEmpty()) {

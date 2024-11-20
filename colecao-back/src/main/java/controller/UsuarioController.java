@@ -1,7 +1,6 @@
 package controller;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -22,8 +21,7 @@ import model.vo.UsuarioVO;
 
 public class UsuarioController {
 
-	private UsuarioBO usuarioBO = new UsuarioBO();
-	
+
 	@POST
 	@Path("/cadastrar")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -41,7 +39,7 @@ public class UsuarioController {
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response consultarTodosUsuariosController() {
 		UsuarioBO usuarioBO = new UsuarioBO();
-		return usuarioBO.consultarTodosUsuarioBO();
+		return usuarioBO.consultarTodosUsuariosBO();
 	}
 	
 	@GET
