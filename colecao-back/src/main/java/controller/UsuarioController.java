@@ -37,7 +37,7 @@ public class UsuarioController {
 
 	
 	@GET
-	@Path("/listar")
+	@Path("/Consultar")
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response consultarTodosUsuariosController() {
 		UsuarioBO usuarioBO = new UsuarioBO();
@@ -45,7 +45,7 @@ public class UsuarioController {
 	}
 	
 	@GET
-	@Path("/pesquisar/{idusuario}")
+	@Path("/Consultar/{Id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response verificarCadastroUsuarioPorIDController(@PathParam("idusuario") int idUsuario) {
