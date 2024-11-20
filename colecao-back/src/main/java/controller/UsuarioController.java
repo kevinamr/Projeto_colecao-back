@@ -7,10 +7,15 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import model.bo.UsuarioBO;
 import model.vo.UsuarioVO;
 
@@ -30,4 +35,41 @@ public class UsuarioController {
 		return usuarioBO.cadastrarUsuarioBO(usuarioInputStream, fileInputStream, fileMetaData);
 	}
 
+	
+	@GET
+	@Path("/listar")
+	@Produces(MediaType.MULTIPART_FORM_DATA)
+	public Response consultarTodosUsuariosController() {
+		UsuarioBO usuarioBO = new UsuarioBO();
+		return usuarioBO.consultarTodosUsuarioBO();
+	}
+	
+	@GET
+	@Path("/pesquisar/{idusuario}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.MULTIPART_FORM_DATA)
+	public Response verificarCadastroUsuarioPorIDController(@PathParam("idusuario") int idUsuario) {
+		UsuarioBO usuarioBO = new UsuarioBO();
+		return usuarioBO.consultarUsuarioBO(idUsuario);
+	}
+	
+	@PUT
+	@Path("/atualizar")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.MULTIPART_FORM_DATA)
+	public Boolean atualizarUsuarioController(@FormDataParam("file") InputStream fileInputStream,
+			@FormDataParam("file") FormDataContentDisposition fileMetaData,
+			@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
+		UsuarioBO usuarioBO = new UsuarioBO();
+		return usuarioBO.atualizarUsuarioBO(usuarioInputStream, fileInputStream, fileMetaData);
+	}
+	
+	@DELETE
+	@Path("/excluir")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.MULTIPART_FORM_DATA)
+	public Boolean excluirUsuarioController(UsuarioVO usuarioVO) {
+		UsuarioBO usuarioBO = new UsuarioBO();
+		return usuarioBO.excluirUsuarioBO(usuarioVO);
+	}
 }
