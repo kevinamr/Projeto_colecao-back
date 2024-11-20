@@ -16,14 +16,14 @@ public class CoinDAO {
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
 		boolean retorno = false;
-		String query = "SELECT idCoin FROM moeda WHERE nome = '" + coinVO.getNome() + "'";
+		String query = "SELECT idCoin FROM coin WHERE nome = '" + coinVO.getNome() + "'";
 		try {
 			resultado = stmt.executeQuery(query);
 			if (resultado.next()) {
 				retorno = true;
 			}
 		} catch (SQLException erro) {
-			System.out.println("Erro ao exercutar a query do método verificarCadastroMoedaBanco");
+			System.out.println("Erro ao exercutar a query do método verificarCadastroBanco");
 			System.out.println("Erro: " + erro.getMessage());
 		} finally {
 			Banco.closeResultSet(resultado);
@@ -82,7 +82,7 @@ public class CoinDAO {
 				listaMoedas.add(coin);
 			}
 		} catch (SQLException erro) {
-			System.out.println("Erro ao executar a query do método consultarTodasMoedasDAO");
+			System.out.println("Erro ao executar a query do método consultarTodasCoinDAO");
 			System.out.println("Erro: " + erro.getMessage());
 		} finally {
 			Banco.closeResultSet(resultado);
@@ -129,14 +129,14 @@ public class CoinDAO {
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
 		boolean retorno = false;
-		String query = "SELEC idMoeda FROM moeda WHERE idMoeda = " + coinVO.getIdCoin();
+		String query = "SELEC idCoin FROM coin WHERE idCoin = " + coinVO.getIdCoin();
 		try {
 			resultado = stmt.executeQuery(query);
 			if (resultado.next()) {
 				retorno = true;
 			}
 		} catch (SQLException erro) {
-			System.out.println("Erro ao executar a query do método verificarCadastroMoedaPorID");
+			System.out.println("Erro ao executar a query do método verificarCadastroCoinPorID");
 			System.out.println("Erro: " + erro.getMessage());
 		} finally {
 			Banco.closeResultSet(resultado);
