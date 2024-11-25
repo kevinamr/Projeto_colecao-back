@@ -16,8 +16,8 @@ dataexpiracao DATE
 );
 
 
-CREATE TABLE moeda (
-idmoeda INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE coin (
+idcoin INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 idusuario INT, FOREIGN KEY (idusuario) REFERENCES usuario (idusuario),
 nome VARCHAR(255),
 pais VARCHAR(255),
