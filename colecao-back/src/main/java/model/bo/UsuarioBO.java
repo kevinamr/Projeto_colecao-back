@@ -19,8 +19,7 @@ public class UsuarioBO {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
-	public UsuarioVO cadastrarUsuarioBO(InputStream usuarioInputStream, InputStream fileInputStream,
-			FormDataContentDisposition fileMetaData) {
+	public UsuarioVO cadastrarUsuarioBO(InputStream usuarioInputStream) {
 		
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		UsuarioVO usuarioVO = null;
@@ -83,8 +82,7 @@ public class UsuarioBO {
 		}
 	}
 	
-	public Boolean atualizarUsuarioBO(InputStream usuarioInputStream, InputStream fileInputStream,
-			FormDataContentDisposition fileMetaData) {
+	public Boolean atualizarUsuarioBO(InputStream usuarioInputStream) {
 		boolean resultado = false;
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		UsuarioVO usuarioVO = null;

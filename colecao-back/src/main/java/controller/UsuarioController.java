@@ -23,13 +23,11 @@ public class UsuarioController {
 
 	@POST
 	@Path("/cadastrar")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public UsuarioVO cadastrarUsuarioController(@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileMetaData,
-			@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
+	public UsuarioVO cadastrarUsuarioController(@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
 		UsuarioBO usuarioBO = new UsuarioBO();
-		return usuarioBO.cadastrarUsuarioBO(usuarioInputStream, fileInputStream, fileMetaData);
+		return usuarioBO.cadastrarUsuarioBO(usuarioInputStream);
 	}
 
 	
@@ -42,7 +40,7 @@ public class UsuarioController {
 	}
 	
 	@GET
-	@Path("/consultar/{id}")
+	@Path("/consultar/{idusuario}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response verificarCadastroUsuarioPorIDController(@PathParam("idusuario") int idUsuario) {
@@ -54,11 +52,9 @@ public class UsuarioController {
 	@Path("/atualizar")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Boolean atualizarUsuarioController(@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileMetaData,
-			@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
+	public Boolean atualizarUsuarioController(@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
 		UsuarioBO usuarioBO = new UsuarioBO();
-		return usuarioBO.atualizarUsuarioBO(usuarioInputStream, fileInputStream, fileMetaData);
+		return usuarioBO.atualizarUsuarioBO(usuarioInputStream);
 	}
 	
 	@DELETE

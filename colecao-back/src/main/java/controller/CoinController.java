@@ -43,10 +43,10 @@ public class CoinController {
 	}
 	
 	@GET
-	@Path("/pesquisar/{Id}")
+	@Path("/pesquisar/{idcoin}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Response verificarCadastroMoedaPorIDController(@PathParam("udcoin") int idCoin) {
+	public Response verificarCadastroMoedaPorIDController(@PathParam("idcoin") int idCoin) {
 		CoinBO coinBO = new CoinBO();
 		return coinBO.consultarCoinBO(idCoin);
 	}
