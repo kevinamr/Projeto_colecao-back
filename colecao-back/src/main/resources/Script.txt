@@ -27,3 +27,8 @@ detalhes VARCHAR(255),
 datacadastro DATE,
 imagem LONGBLOB
 );
+
+select * from usuario;
+
+-- INSERT INTO usuario (nome, email, login, senha, datacadastro, dataexpiracao)
+-- VALUES ('Nome da Pessoa', 'email@example.com', 'login_usuario', 'senha123', '2024-11-25', '2025-11-24');
