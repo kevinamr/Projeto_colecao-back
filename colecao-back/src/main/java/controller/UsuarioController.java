@@ -18,9 +18,8 @@ import jakarta.ws.rs.core.Response;
 import model.bo.UsuarioBO;
 import model.vo.UsuarioVO;
 
-
+@Path("/usuario")
 public class UsuarioController {
-
 
 	@POST
 	@Path("/cadastrar")
@@ -35,7 +34,7 @@ public class UsuarioController {
 
 	
 	@GET
-	@Path("/Consultar")
+	@Path("/consultar")
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response consultarTodosUsuariosController() {
 		UsuarioBO usuarioBO = new UsuarioBO();
@@ -43,7 +42,7 @@ public class UsuarioController {
 	}
 	
 	@GET
-	@Path("/Consultar/{Id}")
+	@Path("/consultar/{Id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response verificarCadastroUsuarioPorIDController(@PathParam("idusuario") int idUsuario) {
