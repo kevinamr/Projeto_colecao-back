@@ -42,7 +42,7 @@ public class UsuarioController {
 	}
 	
 	@GET
-	@Path("/consultar/{Id}")
+	@Path("/consultar/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response verificarCadastroUsuarioPorIDController(@PathParam("idusuario") int idUsuario) {
