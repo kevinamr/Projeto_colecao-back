@@ -19,25 +19,25 @@ import model.bo.CoinBO;
 import model.vo.CoinVO;
 
 
-
+@Path("/coin")
 public class CoinController {
 	
 	@POST
 	@Path("/cadastrar")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public CoinVO cadastrarMoedaController(@FormDataParam("file") InputStream fileInputStream,
+	public CoinVO cadastrarCoinController(@FormDataParam("file") InputStream fileInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileMetaData,
-			@FormDataParam("coinBO") InputStream moedaInputStream) throws Exception {
+			@FormDataParam("coinVO") InputStream coinInputStream) throws Exception {
 		CoinBO coinBO = new CoinBO();
-		return coinBO.cadastrarCoinBO(moedaInputStream, fileInputStream, fileMetaData);
+		return coinBO.cadastrarCoinBO(coinInputStream, fileInputStream, fileMetaData);
 	}
 
 	
 	@GET
 	@Path("/consultar")
 	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Response consultarTodasMoedasController() {
+	public Response consultarTodasCoinsController() {
 		CoinBO coinBO = new CoinBO();
 		return coinBO.consultarTodasCoinBO();
 	}
@@ -46,27 +46,27 @@ public class CoinController {
 	@Path("/pesquisar/{idcoin}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Response verificarCadastroMoedaPorIDController(@PathParam("idcoin") int idCoin) {
+	public Response verificarCadastroCoinPorIDController(@PathParam("idcoin") int idCoin) {
 		CoinBO coinBO = new CoinBO();
 		return coinBO.consultarCoinBO(idCoin);
 	}
 	
 	@PUT
 	@Path("/atualizar")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Boolean atualizarMoedaController(@FormDataParam("file") InputStream fileInputStream,
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean atualizarCoinController(@FormDataParam("file") InputStream fileInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileMetaData,
-			@FormDataParam("usuarioVO") InputStream moedaInputStream) throws Exception {
+			@FormDataParam("coinVO") InputStream coinInputStream) throws Exception {
 		CoinBO coinBO = new CoinBO();
-		return coinBO.atualizarCoinBOs(moedaInputStream, fileInputStream, fileMetaData);
+		return coinBO.atualizarCoinBOs(coinInputStream, fileInputStream, fileMetaData);
 	}
 	
 	@DELETE
 	@Path("/excluir")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Boolean excluirMoedaController(CoinVO coinVO) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean excluirCoinController(CoinVO coinVO) {
 		CoinBO coinBO = new CoinBO();
 		return coinBO.excluirCoinBO(coinVO);
 	}

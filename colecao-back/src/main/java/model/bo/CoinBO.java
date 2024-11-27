@@ -19,8 +19,6 @@ import jakarta.ws.rs.core.Response;
 import model.dao.CoinDAO;
 import model.vo.CoinVO;
 
-
-
 public class CoinBO {
 	
 	private byte[] converterByteParaArray(InputStream inputStream) throws IOException {
@@ -34,25 +32,23 @@ public class CoinBO {
 		return buffer.toByteArray();
 	}
 
-	public CoinVO cadastrarCoinBO(InputStream moedaInputStream, InputStream fileInputStream,
+	public CoinVO cadastrarCoinBO(InputStream coinInputStream, InputStream fileInputStream,
 			FormDataContentDisposition fileMetaData) {
 		CoinDAO coinDAO = new CoinDAO();
 		CoinVO coinVO = null;
 		try {
-			byte[] arquivo = this.converterByteParaArray(fileInputStream); // Lê o conteúdo do arquivo
+			byte[] arquivo = this.converterByteParaArray(fileInputStream); 
 
-			String coinJson = new String(this.converterByteParaArray(moedaInputStream), StandardCharsets.UTF_8); // Lê
-																													// o
-																													// JSON
-
-			// Converte JSON em objeto JAVA:
+			String coinJson = new String(this.converterByteParaArray(coinInputStream), StandardCharsets.UTF_8); 
+																													
+																													
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.findAndRegisterModules();
 			coinVO = objectMapper.readValue(coinJson, CoinVO.class);
 			coinVO.setImagem(arquivo);
 
 			if (coinDAO.verificarCadastroCoinBancoDAO(coinVO)) {
-				System.out.println("Moeda já cadastrada no banco de dados!");
+				System.out.println("Coin já cadastrada no banco de dados!");
 			} else {
 				coinVO = coinDAO.cadastrarCoinDAO(coinVO);
 			}
@@ -82,8 +78,8 @@ public class CoinBO {
 				byte[] imagem = coinVO.getImagem();
 				coinVO.setImagem(null);
 
-				String moedaJson = objectMapper.writeValueAsString(coinVO);
-				multiPart.bodyPart(new StreamDataBodyPart("coinVO", new ByteArrayInputStream(moedaJson.getBytes()),
+				String coinJson = objectMapper.writeValueAsString(coinVO);
+				multiPart.bodyPart(new StreamDataBodyPart("coinVO", new ByteArrayInputStream(coinJson.getBytes()),
 						coinVO.getIdCoin() + "-coin.json"));
 
 				if (imagem != null) {
@@ -100,9 +96,9 @@ public class CoinBO {
 
 	public Response consultarCoinBO(int idCoin) {
 		CoinDAO coinDAO = new CoinDAO();
-		CoinVO coinVO = coinDAO.consultarCoinBO(idCoin);
+		CoinVO coinVO = coinDAO.consultarCoinDAO(idCoin);
 		if (coinVO == null) {
-			System.out.println("\nObjeto Moeda está vazio");
+			System.out.println("\nObjeto Coin está vazio");
 			return Response.status(Response.Status.NO_CONTENT).entity("Nenhuma Coin foi encontrada").build();
 		}
 
@@ -114,12 +110,10 @@ public class CoinBO {
 			byte[] imagem = coinVO.getImagem();
 			coinVO.setImagem(imagem);
 
-			// Adiciona JSON da moeda:
 			String coinJson = objectMapper.writeValueAsString(coinVO);
 			multiPart.bodyPart(new StreamDataBodyPart("coinVO", new ByteArrayInputStream(coinJson.getBytes()),
 					coinVO.getIdCoin() + "-coin.json"));
 
-			// Adiciona a imagem como um arquivo:
 			if (imagem != null) {
 				multiPart.bodyPart(new StreamDataBodyPart("imagem", new ByteArrayInputStream(imagem),
 						coinVO.getIdCoin() + "-imagem.jpg"));
@@ -131,22 +125,19 @@ public class CoinBO {
 		}
 	}
 
-	public Boolean atualizarCoinBOs(InputStream moedaInputStream, InputStream fileInputStream,
+	public Boolean atualizarCoinBOs(InputStream coinInputStream, InputStream fileInputStream,
 			FormDataContentDisposition fileMetaData) {
 	boolean resultado = false;
 	CoinDAO coinDAO = new CoinDAO();
 	CoinVO coinVO = null;
 	try {
-		// Lê o conteudo do arquivo:
 		byte[] arquivo = null;
 		if (fileInputStream != null) {
 			arquivo = this.converterByteParaArray(fileInputStream);
 		}
 
-		// Lê conteúdo do JSON:
-		String coinJson = new String(this.converterByteParaArray(moedaInputStream), StandardCharsets.UTF_8);
+		String coinJson = new String(this.converterByteParaArray(coinInputStream), StandardCharsets.UTF_8);
 
-		// Converte JSON em objeto java
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.findAndRegisterModules();
 		coinVO = objectMapper.readValue(coinJson, CoinVO.class);
@@ -158,7 +149,7 @@ public class CoinBO {
 		if (coinDAO.verificarCadastroCoinBancoDAO(coinVO)) {
 			resultado = coinDAO.atualizarCoinDAO(coinVO);
 		} else {
-			System.out.println("Moeda não consta na base de dados");
+			System.out.println("Coin não foi encontrada na base de dados");
 		}
 
 	} catch (FileNotFoundException erro) {

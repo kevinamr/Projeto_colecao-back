@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import model.vo.CoinVO;
@@ -23,7 +24,7 @@ public class CoinDAO {
 				retorno = true;
 			}
 		} catch (SQLException erro) {
-			System.out.println("Erro ao exercutar a query do método verificarCadastroBanco");
+			System.out.println("Erro ao exercutar a query do método verificarCadastroCoinBanco");
 			System.out.println("Erro: " + erro.getMessage());
 		} finally {
 			Banco.closeResultSet(resultado);
@@ -34,7 +35,7 @@ public class CoinDAO {
 	}
 
 	public CoinVO cadastrarCoinDAO(CoinVO coinVO) {
-		String query = "INSERT INTO coin (imagem, nome, pais, ano, valor, detalhes) VALUES (?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO coin (imagem, nome, pais, ano, valor, detalhes, idusuario, datacadastro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		Connection conn = Banco.getConnection();
 		PreparedStatement pstmt = Banco.getPreparedStatementWithPk(conn, query);
 		ResultSet resultado = null;
@@ -45,6 +46,8 @@ public class CoinDAO {
 			pstmt.setInt(4, coinVO.getAno());
 			pstmt.setDouble(5, coinVO.getValor());
 			pstmt.setString(6, coinVO.getDetalhes());
+			pstmt.setInt(7, coinVO.getIdUsuario());
+			pstmt.setObject(8, LocalDate.now());
 			pstmt.execute();
 			resultado = pstmt.getGeneratedKeys();
 			if (resultado.next()) {
@@ -66,7 +69,7 @@ public class CoinDAO {
 		Statement stmt = Banco.getStatement(conn);
 
 		ResultSet resultado = null;
-		ArrayList<CoinVO> listaMoedas = new ArrayList<>();
+		ArrayList<CoinVO> Coinslist = new ArrayList<>();
 		String query = "SELECT idCoin, imagem, nome, pais, ano, valor, detalhes FROM coin";
 		try {
 			resultado = stmt.executeQuery(query);
@@ -79,7 +82,7 @@ public class CoinDAO {
 				coin.setAno(Integer.parseInt(resultado.getString(5)));
 				coin.setValor(Double.parseDouble(resultado.getString(6)));
 				coin.setDetalhes(resultado.getString(7));
-				listaMoedas.add(coin);
+				Coinslist.add(coin);
 			}
 		} catch (SQLException erro) {
 			System.out.println("Erro ao executar a query do método consultarTodasCoinDAO");
@@ -89,16 +92,15 @@ public class CoinDAO {
 			Banco.closeStatement(stmt);
 			Banco.closeConnection(conn);
 		}
-		return listaMoedas;
+		return Coinslist;
 	}
 
-	public CoinVO consultarCoinBO(int idCoin) {
+	public CoinVO consultarCoinDAO(int idCoin) {
 		Connection conn = Banco.getConnection();
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
 
-		String query = "SELECT idCoin, imagem, nome, pais, ano, valor, detalhes FROM coin WHERE idCoin = '"
-				+ idCoin;
+		String query = "SELECT idCoin, imagem, nome, pais, ano, valor, detalhes FROM coin WHERE idCoin = " + idCoin;
 
 		CoinVO coin = new CoinVO();
 		try {
