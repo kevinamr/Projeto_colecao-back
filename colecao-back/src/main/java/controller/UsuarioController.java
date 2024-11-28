@@ -2,9 +2,6 @@ package controller;
 
 import java.io.InputStream;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -15,7 +12,9 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import model.bo.UsuarioBO;
+import model.dao.UsuarioDAO;
 import model.vo.UsuarioVO;
 
 @Path("/usuario")
@@ -23,13 +22,11 @@ public class UsuarioController {
 
 	@POST
 	@Path("/cadastrar")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public UsuarioVO cadastrarUsuarioController(@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileMetaData,
-			@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
+	public UsuarioVO cadastrarUsuarioController(InputStream usuarioInputStream) {
 		UsuarioBO usuarioBO = new UsuarioBO();
-		return usuarioBO.cadastrarUsuarioBO(usuarioInputStream, usuarioInputStream, fileMetaData);
+		return usuarioBO.cadastrarUsuarioBO(usuarioInputStream);
 	}
 
 	
@@ -39,6 +36,30 @@ public class UsuarioController {
 	public Response consultarTodosUsuariosController() {
 		UsuarioBO usuarioBO = new UsuarioBO();
 		return usuarioBO.consultarTodosUsuariosBO();
+	}
+	
+	@POST
+	@Path("/login")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response loginUsuarioController(InputStream usuarioInputStream) {
+		System.out.println("Entrou no Controller: loginUsuarioController");
+
+		UsuarioBO usuarioBO = new UsuarioBO();
+		try {
+			UsuarioVO usuarioAutenticado = usuarioBO.loginUsuarioBO(usuarioInputStream);
+
+			if (usuarioAutenticado != null && usuarioAutenticado.getIdUsuario() > 0) {
+				return Response.status(Response.Status.OK).entity(usuarioAutenticado).build();
+			} else {
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity("{\"message\": \"Usuário inválido ou excluído.\"}").build();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\": \"Erro no servidor.\"}")
+					.build();
+		}
 	}
 	
 	@GET
@@ -53,18 +74,23 @@ public class UsuarioController {
 	@PUT
 	@Path("/atualizar")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.MULTIPART_FORM_DATA)
-	public Boolean atualizarUsuarioController(@FormDataParam("file") InputStream fileInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileMetaData,
-			@FormDataParam("usuarioVO") InputStream usuarioInputStream) throws Exception {
-		UsuarioBO usuarioBO = new UsuarioBO();
-		return usuarioBO.atualizarUsuarioBO(usuarioInputStream, fileInputStream, fileMetaData);
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response atualizarUsuarioController(UsuarioVO usuarioVO) {
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        
+        boolean sucesso = usuarioDAO.atualizarUsuarioDAO(usuarioVO);
+
+        if (sucesso) {
+            return Response.ok(usuarioVO).build();  
+        } else {
+            return Response.status(Status.NOT_MODIFIED).entity("Falha ao atualizar usuário.").build();
+        }
 	}
 	
 	@DELETE
 	@Path("/excluir")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean excluirUsuarioController(UsuarioVO usuarioVO) {
 		UsuarioBO usuarioBO = new UsuarioBO();
 		return usuarioBO.excluirUsuarioBO(usuarioVO);

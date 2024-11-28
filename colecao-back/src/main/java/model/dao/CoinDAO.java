@@ -65,34 +65,36 @@ public class CoinDAO {
 	}
 
 	public ArrayList<CoinVO> consultarTodasCoinDAO() {
-		Connection conn = Banco.getConnection();
-		Statement stmt = Banco.getStatement(conn);
-
-		ResultSet resultado = null;
-		ArrayList<CoinVO> Coinslist = new ArrayList<>();
-		String query = "SELECT idCoin, imagem, nome, pais, ano, valor, detalhes FROM coin";
-		try {
-			resultado = stmt.executeQuery(query);
-			while (resultado.next()) {
-				CoinVO coin = new CoinVO();
-				coin.setIdCoin(Integer.parseInt(resultado.getString(1)));
-				coin.setImagem(resultado.getBytes(2));
-				coin.setNome(resultado.getString(3));
-				coin.setPais(resultado.getString(4));
-				coin.setAno(Integer.parseInt(resultado.getString(5)));
-				coin.setValor(Double.parseDouble(resultado.getString(6)));
-				coin.setDetalhes(resultado.getString(7));
-				Coinslist.add(coin);
-			}
-		} catch (SQLException erro) {
-			System.out.println("Erro ao executar a query do método consultarTodasCoinDAO");
-			System.out.println("Erro: " + erro.getMessage());
-		} finally {
-			Banco.closeResultSet(resultado);
-			Banco.closeStatement(stmt);
-			Banco.closeConnection(conn);
-		}
-		return Coinslist;
+		
+        Connection conn = Banco.getConnection();
+        Statement stmt = Banco.getStatement(conn);
+        
+        ResultSet resultado = null;
+        ArrayList<CoinVO> listaCoins = new ArrayList<>();
+        String query = "SELECT idCoin, imagem, nome, pais, ano, valor, detalhes FROM coin";
+        
+        try {
+            resultado = stmt.executeQuery(query);
+            while (resultado.next()) {
+            	CoinVO coin = new CoinVO();
+                coin.setIdCoin(resultado.getInt(1));
+                coin.setImagem(resultado.getBytes(2));
+                coin.setNome(resultado.getString(3));
+                coin.setPais(resultado.getString(4));
+                coin.setAno(resultado.getInt(5));
+                coin.setValor(resultado.getDouble(6));
+                coin.setDetalhes(resultado.getString(7));
+                listaCoins.add(coin);
+            }
+        } catch (SQLException erro) {
+            System.out.println("Erro ao executar a query do método consultarTodasCoinDAO");
+            System.out.println("Erro: " + erro.getMessage());
+        } finally {
+            Banco.closeResultSet(resultado);
+            Banco.closeStatement(stmt);
+            Banco.closeConnection(conn);
+        }
+        return listaCoins;
 	}
 
 	public CoinVO consultarCoinDAO(int idCoin) {

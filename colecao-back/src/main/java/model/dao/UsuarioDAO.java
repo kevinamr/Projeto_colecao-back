@@ -24,7 +24,6 @@ public class UsuarioDAO {
 			pstmt.setString(2, usuarioVO.getEmail());
 			pstmt.setString(3, usuarioVO.getLogin());
 			pstmt.setString(4, usuarioVO.getSenha());
-			// Converte LocalDate para java.sql.Date:
 			pstmt.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
 			pstmt.executeUpdate();
 			resultado = pstmt.getGeneratedKeys();
@@ -45,21 +44,24 @@ public class UsuarioDAO {
 
 	public boolean verificarCadastroUsuarioBancoDAO(UsuarioVO usuarioVO) {
 		Connection conn = Banco.getConnection();
-		Statement stmt = Banco.getStatement(conn);
+		PreparedStatement pstmt = null;
 		ResultSet resultado = null;
 		boolean retorno = false;
-		String query = "SELECT idUsuario FROM usuario WHERE email = '" + usuarioVO.getEmail() + "'";
+		String query = "SELECT COUNT(*) FROM usuario WHERE idUsuario = ?";
 		try {
-			resultado = stmt.executeQuery(query);
+			pstmt = Banco.getPreparedStatement(conn, query);
+			pstmt.setInt(1, usuarioVO.getIdUsuario());
+			resultado = pstmt.executeQuery();
+			
 			if (resultado.next()) {
-				retorno = true;
+				retorno = resultado.getInt(1) > 0;
 			}
 		} catch (SQLException erro) {
 			System.out.println("Erro ao executar a query do método verificarCadastroUsuarioBancoDAO");
 			System.out.println("Erro: " + erro.getMessage());
 		} finally {
 			Banco.closeResultSet(resultado);
-			Banco.closeStatement(stmt);
+			Banco.closePreparedStatement(pstmt);
 			Banco.closeConnection(conn);
 		}
 		return retorno;
@@ -70,7 +72,7 @@ public class UsuarioDAO {
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
 		ArrayList<UsuarioVO> listaUsuarios = new ArrayList<>();
-		String query = "SELECT idUsuario, nome, email, login, senha, dataCadastro, dataExpiracao FROM usuario";
+		String query = "SELECT idUsuario, nome, email, login, senha FROM usuario";
 		try {
 			resultado = stmt.executeQuery(query);
 			while (resultado.next()) {
@@ -80,8 +82,6 @@ public class UsuarioDAO {
 				usuario.setEmail(resultado.getString(3));
 				usuario.setLogin(resultado.getString(4));
 				usuario.setSenha(resultado.getString(5));
-				usuario.setDataCadastro(resultado.getDate(6).toLocalDate());
-				usuario.setDataExpiracao(resultado.getDate(7).toLocalDate());
 				listaUsuarios.add(usuario);
 			}
 		} catch (SQLException erro) {
@@ -100,8 +100,8 @@ public class UsuarioDAO {
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
 		UsuarioVO usuario = null;
-		String query = "SELECT idUsuario, nome, email, login, senha, dataCadastro, dataExpiracao FROM usuario WHERE idUsuario = "
-				+ idUsuario;
+		String query = "SELECT idUsuario, nome, email, login, senha FROM usuario WHERE idUsuario = " + idUsuario;
+		
 		try {
 			resultado = stmt.executeQuery(query);
 			if (resultado.next()) {
@@ -111,8 +111,7 @@ public class UsuarioDAO {
 				usuario.setEmail(resultado.getString(3));
 				usuario.setLogin(resultado.getString(4));
 				usuario.setSenha(resultado.getString(5));
-				usuario.setDataCadastro(resultado.getDate(6).toLocalDate());
-				usuario.setDataExpiracao(resultado.getDate(7).toLocalDate());
+
 			}
 		} catch (SQLException erro) {
 			System.out.println("Erro ao executar a query do método consultarUsuarioDAO");
@@ -128,56 +127,76 @@ public class UsuarioDAO {
 	public boolean atualizarUsuarioDAO(UsuarioVO usuarioVO) {
 		boolean retorno = false;
 		Connection conn = Banco.getConnection();
-		String query = "UPDATE usuario SET nome = ?, email = ?, login = ?, senha = ?, dataExpiracao = ? WHERE idUsuario = ?";
+		String query = "UPDATE usuario SET nome = ?, email = ?, login = ?, senha = ? WHERE idUsuario = ?";
 		PreparedStatement pstmt = Banco.getPreparedStatement(conn, query);
 		try {
 			pstmt.setString(1, usuarioVO.getNome());
 			pstmt.setString(2, usuarioVO.getEmail());
 			pstmt.setString(3, usuarioVO.getLogin());
 			pstmt.setString(4, usuarioVO.getSenha());
-			pstmt.setDate(5, java.sql.Date.valueOf(usuarioVO.getDataExpiracao()));
-			pstmt.setInt(6, usuarioVO.getIdUsuario());
-			if (pstmt.executeUpdate() == 1) {
-				retorno = true;
-			}
+			pstmt.setInt(5, usuarioVO.getIdUsuario());
+			
+			int linhasAfetadas = pstmt.executeUpdate();
+			retorno = (linhasAfetadas > 0);
 		} catch (SQLException erro) {
 			System.out.println("Erro ao executar a query do método atualizarUsuarioDAO");
 			System.out.println("Erro: " + erro.getMessage());
-		} finally {
-			Banco.closePreparedStatement(pstmt);
-			Banco.closeConnection(conn);
 		}
 		return retorno;
 	}
 
 	public boolean excluirUsuarioDAO(UsuarioVO usuarioVO) {
-		Connection conn = Banco.getConnection();
-		Statement stmt = Banco.getStatement(conn);
-		PreparedStatement pstmt = null;
 		boolean retorno = false;
-		String queryDelete = "DELETE FROM usuario WHERE idUsuario = " + usuarioVO.getIdUsuario();
-		String queryUpdate = "UPDATE usuario SET dataExpiracao = ? WHERE idUsuario = ?";
+		Connection conn = Banco.getConnection();
+		PreparedStatement pstmt = null;
+
+		String query = "UPDATE usuario SET dataExpiracao = ? WHERE idUsuario = ?";
+		pstmt = Banco.getPreparedStatement(conn, query);
 
 		try {
-			// Excluindo:
-			if (stmt.executeUpdate(queryDelete) == 1) {
-				pstmt = conn.prepareStatement(queryUpdate);
-				pstmt.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
-				pstmt.setInt(2, usuarioVO.getIdUsuario());
-
-				// Atualizando data de expiração:
-				pstmt.executeUpdate();
+			System.out.println("Executando query: " + query);
+			pstmt.setObject(1, LocalDate.now());
+			pstmt.setInt(2, usuarioVO.getIdUsuario());
+			if (pstmt.executeUpdate() == 1) {
 				retorno = true;
 			}
 		} catch (SQLException erro) {
-			System.out.println("Erro no método excluirUsuarioDAO");
-			System.out.println(erro.getMessage());
+			System.out.println("Erro ao executar a query do método excluirUsuarioDAO");
+			System.out.println("Erro: " + erro);
 		} finally {
-			Banco.closeStatement(pstmt);
-			Banco.closeStatement(stmt);
+			Banco.closePreparedStatement(pstmt);
 			Banco.closeConnection(conn);
 		}
+
 		return retorno;
+	}
+
+	public UsuarioVO loginUsuarioDAO(UsuarioVO usuarioVO) {
+		System.out.println("Entrou no DAO: loginUsuarioDAO");
+		Connection conn = Banco.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet resultado = null;
+
+		String query = "SELECT idUsuario, login, senha FROM usuario WHERE login = ? AND senha = ? AND dataExpiracao IS NULL";
+		try {
+			pstmt = Banco.getPreparedStatement(conn, query);
+			pstmt.setString(1, usuarioVO.getLogin());
+			pstmt.setString(2, usuarioVO.getSenha());
+
+			resultado = pstmt.executeQuery();
+			if (resultado.next()) {
+				usuarioVO.setIdUsuario(resultado.getInt(1));
+			}
+		} catch (SQLException erro) {
+			System.out.println("Erro ao verificar a query do método loginUsuarioDAO");
+			System.out.println("Erro: " + erro);
+		} finally {
+			Banco.closeResultSet(resultado);
+			Banco.closePreparedStatement(pstmt);
+			Banco.closeConnection(conn);
+		}
+		return usuarioVO;
+
 	}
 
 }

@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.core.Response;
@@ -19,17 +17,14 @@ public class UsuarioBO {
 		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
-	public UsuarioVO cadastrarUsuarioBO(InputStream usuarioInputStream, InputStream fileInputStream, FormDataContentDisposition fileMetaData) {
+	public UsuarioVO cadastrarUsuarioBO(InputStream usuarioInputStream) {
 		
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		UsuarioVO usuarioVO = null;
 		try {
-			String usuarioJSON = this.converterInputStreamParaString(usuarioInputStream);
-
-			// Converte JSON em objeto JAVA:
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.findAndRegisterModules();
-			usuarioVO = objectMapper.readValue(usuarioJSON, UsuarioVO.class);
+			usuarioVO = objectMapper.readValue(usuarioInputStream, UsuarioVO.class);
 
 			if (usuarioDAO.verificarCadastroUsuarioBancoDAO(usuarioVO)) {
 				System.out.println("Usuário já cadastrado no banco de dados!");
@@ -39,7 +34,7 @@ public class UsuarioBO {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return usuarioVO;
 	}
 
 	public Response consultarTodosUsuariosBO() {
@@ -82,37 +77,83 @@ public class UsuarioBO {
 		}
 	}
 	
-	public Boolean atualizarUsuarioBO(InputStream usuarioInputStream, InputStream fileInputStream, FormDataContentDisposition fileMetaData) {
-		boolean resultado = false;
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		UsuarioVO usuarioVO = null;
-		try {
-			String usuarioJson = this.converterInputStreamParaString(usuarioInputStream);
+	public Response atualizarUsuarioBO(UsuarioVO usuarioVO) {
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        try {
+            if (!usuarioDAO.verificarCadastroUsuarioBancoDAO(usuarioVO)) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Usuário não encontrado no banco de dados.")
+                        .build();
+            }
 
-			// Converte JSON em objeto JAVA
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.findAndRegisterModules();
-			usuarioVO = objectMapper.readValue(usuarioJson, UsuarioVO.class);
+            boolean sucesso = usuarioDAO.atualizarUsuarioDAO(usuarioVO);
+            if (sucesso) {
+                return Response.status(Response.Status.OK)
+                        .entity("Usuário atualizado com sucesso.")
+                        .build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Erro ao atualizar usuário.")
+                        .build();
+            }
 
-			if (usuarioDAO.verificarCadastroUsuarioBancoDAO(usuarioVO)) {
-				resultado = usuarioDAO.atualizarUsuarioDAO(usuarioVO);
-			} else {
-				System.out.println("Usuário não consta na base de dados");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return resultado;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Erro ao processar a atualização do usuário.")
+                    .build();
+        }
+    }
 	
 	public Boolean excluirUsuarioBO(UsuarioVO usuarioVO) {
-		boolean resultado = false;
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		if (usuarioDAO.verificarCadastroUsuarioBancoDAO(usuarioVO)) {
-			resultado = usuarioDAO.excluirUsuarioDAO(usuarioVO);
-		} else {
-			System.out.println("\nUsuário não existe na base de dados");
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        boolean sucesso = usuarioDAO.excluirUsuarioDAO(usuarioVO);
+        
+        if (sucesso) {
+            System.out.println("Usuário excluído com sucesso no BO.");
+        } else {
+            System.out.println("Falha ao excluir o usuário no BO.");
+        }
+
+        return sucesso;
+	}
+
+	public UsuarioVO loginUsuarioBO(InputStream usuarioInputStream) {
+		System.out.println("Entrou no BO: loginUsuarioBO");
+		UsuarioVO usuarioVO = null;
+
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.findAndRegisterModules();
+			usuarioVO = objectMapper.readValue(usuarioInputStream, UsuarioVO.class);
+
+			if (usuarioVO.getLogin() == null || usuarioVO.getSenha() == null) {
+				throw new IllegalArgumentException("Login e senha são obrigatórios.");
+			}
+
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			UsuarioVO usuarioAutenticado = usuarioDAO.loginUsuarioDAO(usuarioVO);
+
+			if (usuarioAutenticado != null && usuarioAutenticado.getIdUsuario() > 0) {
+				return usuarioAutenticado;
+			} else {
+				System.out.println("Usuário ou login inválidos.");
+				return null;
+			}
+		} catch (IOException e) {
+			System.out.println("Erro ao processar dados de entrada no loginUsuarioBO: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
 		}
-		return resultado;
+
+		return null;
 	}
 }
+
+
+
+
+
+
+
