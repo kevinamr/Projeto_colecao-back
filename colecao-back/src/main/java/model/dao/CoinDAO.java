@@ -17,7 +17,7 @@ public class CoinDAO {
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
 		boolean retorno = false;
-		String query = "SELECT idCoin FROM coin WHERE nome = '" + coinVO.getNome() + "'";
+		String query = "SELECT idCoin FROM coin WHERE idCoin = '" + coinVO.getIdCoin() + "'";
 		try {
 			resultado = stmt.executeQuery(query);
 			if (resultado.next()) {
@@ -96,7 +96,7 @@ public class CoinDAO {
         }
         return listaCoins;
 	}
-
+	
 	public CoinVO consultarCoinDAO(int idCoin) {
 		Connection conn = Banco.getConnection();
 		Statement stmt = Banco.getStatement(conn);
@@ -151,6 +151,7 @@ public class CoinDAO {
 	}
 
 	public boolean atualizarCoinDAO(CoinVO coinVO) {
+		System.out.println("Entrou no Controller: DAOatt");
 		boolean retorno = false;
 		Connection conn = Banco.getConnection();
 		PreparedStatement pstmt = null;
@@ -216,5 +217,6 @@ public class CoinDAO {
 		}
 		return retorno;
 	}
+
 
 }

@@ -119,7 +119,6 @@ public class UsuarioBO {
 	}
 
 	public UsuarioVO loginUsuarioBO(InputStream usuarioInputStream) {
-		System.out.println("Entrou no BO: loginUsuarioBO");
 		UsuarioVO usuarioVO = null;
 
 		try {

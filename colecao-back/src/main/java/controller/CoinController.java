@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.InputStream;
+import java.sql.ResultSet;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -38,7 +39,6 @@ public class CoinController {
 	@Path("/consultar")
 	@Produces(MediaType.MULTIPART_FORM_DATA)
 	public Response consultarTodasCoinsController() {
-		System.out.println("Entrou no Controller: consultarTodasMoedasController");
 		CoinBO coinBO = new CoinBO();
 		return coinBO.consultarTodasCoinBO();
 	}
@@ -59,6 +59,7 @@ public class CoinController {
 	public Boolean atualizarCoinController(@FormDataParam("file") InputStream fileInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileMetaData,
 			@FormDataParam("coinVO") InputStream coinInputStream) throws Exception {
+		System.out.println("Entrou no Controller: controlleratt");
 		CoinBO coinBO = new CoinBO();
 		return coinBO.atualizarCoinBOs(coinInputStream, fileInputStream, fileMetaData);
 	}

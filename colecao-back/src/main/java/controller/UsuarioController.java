@@ -43,8 +43,6 @@ public class UsuarioController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response loginUsuarioController(InputStream usuarioInputStream) {
-		System.out.println("Entrou no Controller: loginUsuarioController");
-
 		UsuarioBO usuarioBO = new UsuarioBO();
 		try {
 			UsuarioVO usuarioAutenticado = usuarioBO.loginUsuarioBO(usuarioInputStream);

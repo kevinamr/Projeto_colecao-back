@@ -28,14 +28,15 @@ datacadastro DATE,
 imagem LONGBLOB
 );
 
-INSERT INTO usuario (nome, email, login, senha, datacadastro)
-VALUES ('Nome da Pessoa', 'email@example.com', 'login_usuario', 'senha123', '2024-11-25');
+-- INSERT INTO usuario (nome, email, login, senha, datacadastro)
+-- VALUES ('Nome da Pessoa', 'email@example.com', 'login_usuario', 'senha123', '2024-11-25');
 
-INSERT INTO usuario (nome, email, login, senha, datacadastro)
-VALUES ('kevin', 'kevinamr@example.com', 'login', 'senha123', '2024-11-25');
+-- INSERT INTO usuario (nome, email, login, senha, datacadastro)
+-- VALUES ('kevin', 'kevinamr@example.com', 'login', 'senha123', '2024-11-25');
 
-SELECT * FROM usuario WHERE login = "login_usuario" AND senha = "senha123" AND dataExpiracao IS NULL;
+-- SELECT * FROM usuario WHERE login = "login_usuario" AND senha = "senha123" AND dataExpiracao IS NULL;
 
-select * from usuario;
+-- select * from usuario;
 
-select * from coin;
+-- select * from coin;
+

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -127,6 +128,7 @@ public class CoinBO {
 
 	public Boolean atualizarCoinBOs(InputStream coinInputStream, InputStream fileInputStream,
 			FormDataContentDisposition fileMetaData) {
+		System.out.println("Entrou no Controller: BOatt");
 	boolean resultado = false;
 	CoinDAO coinDAO = new CoinDAO();
 	CoinVO coinVO = null;
@@ -163,12 +165,9 @@ public class CoinBO {
 	public Boolean excluirCoinBO(CoinVO coinVO) {
 		boolean resultado = false;
 		CoinDAO coinDAO = new CoinDAO();
-		if (coinDAO.verificarCadastroCoinPorIDDAO(coinVO)) {
-			resultado = coinDAO.excluirCoinDAO(coinVO);
-		} else {
-			System.out.println("\nCoin não existe na base de dados");
-		}
+		resultado = coinDAO.excluirCoinDAO(coinVO);
 		return resultado;
 	}
+
 
 }

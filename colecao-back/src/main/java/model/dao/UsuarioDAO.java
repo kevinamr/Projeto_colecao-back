@@ -172,7 +172,6 @@ public class UsuarioDAO {
 	}
 
 	public UsuarioVO loginUsuarioDAO(UsuarioVO usuarioVO) {
-		System.out.println("Entrou no DAO: loginUsuarioDAO");
 		Connection conn = Banco.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet resultado = null;
